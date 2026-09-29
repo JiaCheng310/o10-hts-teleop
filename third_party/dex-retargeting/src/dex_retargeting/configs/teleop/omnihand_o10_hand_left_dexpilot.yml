@@ -1,0 +1,30 @@
+{
+  "retargeting": {
+    "type": "dexpilot",
+    "urdf_path": "omnihand_description-omnihandT2_1/assets/urdf/omnihand_left.urdf",
+    "target_joint_names": [
+      "L_thumb_roll_joint",
+      "L_thumb_abad_joint",
+      "L_thumb_mcp_joint",
+      "L_index_abad_joint",
+      "L_index_pip_joint",
+      "L_middle_pip_joint",
+      "L_ring_abad_joint",
+      "L_ring_pip_joint",
+      "L_pinky_abad_joint",
+      "L_pinky_pip_joint"
+    ],
+    "scaling_factor": 1,
+    "low_pass_alpha": -1,
+    "ignore_mimic_joint": false,
+    "wrist_link_name": "L_palm",
+    "finger_tip_link_names": [
+      "L_thumb_tip",
+      "L_index_tip",
+      "L_middle_tip",
+      "L_ring_tip",
+      "L_pinky_tip"
+    ],
+    "polynomial_coupling_path": "../MJCF/omnihand_left.xml"
+  }
+}

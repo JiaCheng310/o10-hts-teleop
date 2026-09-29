@@ -1,0 +1,19 @@
+{
+  "position_weight": 50.0,
+  "rotation_weight": 1.0,
+  "continuity_weight": 1.0,
+  "max_nfev": 24,
+  "budget_ms": 6.0,
+  "joint_step_rad": 0.45,
+  "position_tolerance_m": 0.0002,
+  "rotation_tolerance_rad": 0.001,
+  "motion_continuity_weight": 0.3,
+  "acceleration_weight": 0.5,
+  "max_acceleration_deg_s2": 1200.0,
+  "limit_margin_rad": 0.15,
+  "limit_avoidance_weight": 0.2,
+  "motion_position_weight": 200.0,
+  "guidance_position_m": 0.03,
+  "guidance_rotation_rad": 0.2,
+  "guidance_step_weight": 20.0
+}

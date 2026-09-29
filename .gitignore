@@ -1,0 +1,18 @@
+# Local archives, separately supplied assets, and machine configuration.
+/sources/
+/dependencies/
+/.local/
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+.env
+/output/
+/vendor/
+/config/devices.env
+/teleop/output/
+*.log
+*.mp4
+*.pem
+*.key
+._*

@@ -1,0 +1,52 @@
+<!doctype html><html lang="zh"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Quest HTS 遥操</title>
+<style>body{background:#101921;color:#eef5f9;font:18px system-ui;margin:32px;max-width:900px}button{padding:14px 24px;border:0;border-radius:8px;font:inherit;margin:5px;background:#82e5b3}button:disabled{opacity:.45;cursor:not-allowed}.pause{background:#ffbd88}small{color:#b8cbd8}pre{white-space:pre-wrap;font-size:13px}section{border-top:1px solid #354b59;margin-top:24px;padding-top:12px}#error{color:#ffbd88}</style>
+<h1>Quest → ARX → OmniHand</h1><p>在头显 HTS 中开始传输。手离开即停发，回来后手指自动跟随。</p>
+<button class="pause" onclick="control('pause')">暂停全部跟随</button><button onclick="control('enable')">恢复手指跟随</button>
+<p id="status">连接中…</p><small id="stats"></small>
+<section id="arm" hidden>
+<h2>X5 机械臂</h2><p>HTS 开启 Head Pose。保持右手可见、平视前方，点击对齐。手向前/左/上移动，机械臂末端相应移动；转动手腕控制末端朝向。</p>
+<button id="armalign" onclick="control('arm_align')">对齐并启用机械臂</button>
+<button id="armhome" onclick="control('arm_home')">回零（约 5 秒）</button>
+<button class="pause" onclick="control('arm_pause')">暂停机械臂 / 回零</button>
+<p id="armstatus"></p><small id="armstats"></small><p id="armhint"></p>
+</section>
+<section id="recording"><iframe id="recorder" title="HTS 画面录制" style="width:100%;height:340px;border:0" scrolling="auto"></iframe></section>
+<p id="error" role="alert"></p><details><summary>诊断信息</summary><pre id="debug"></pre></details>
+<script>
+const recorderURL=new URL(location.href);
+recorderURL.port=new URLSearchParams(location.search).get('recording_port') || String(Number(location.port||80)+2);
+recorderURL.pathname='/';recorderURL.search='';recorderURL.hash='';
+const recorderFrame=document.getElementById('recorder');recorderFrame.src=recorderURL.href;
+addEventListener('message',e=>{if(e.source===recorderFrame.contentWindow&&e.origin===recorderURL.origin&&e.data?.source==='quest-recording-height')recorderFrame.style.height=Math.max(300,Math.min(2000,Number(e.data.height)||340))+'px';});
+let controlError='', homePending=false;
+async function control(action){
+  if(action==='arm_home'){homePending=true;document.getElementById('armhome').disabled=true;}
+  try{
+    const r=await fetch('/control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({source:'hts',action})});
+    const s=await r.json(); controlError=r.ok?'':(s.error||'操作失败');
+  }catch(e){controlError=String(e);}
+  finally{if(action==='arm_home')homePending=false;}
+  document.getElementById('error').textContent=controlError;
+}
+async function poll(){
+  try{
+    const s=await(await fetch('/state',{cache:'no-store'})).json();
+    document.querySelector('h1').textContent='Quest → ARX → OmniHand '+(s.side==='right'?'右手':'左手')+(s.mode==='preview'?'（手指预览）':'')+(s.arm?' + X5 '+(s.arm.mode==='hardware'?'实机':'预览'):'');
+    document.getElementById('status').textContent=s.status;
+    document.getElementById('error').textContent=controlError||s.input_error||s.arm?.error||s.arm?.transport_error||'';
+    document.getElementById('stats').textContent=`接收 ${s.frames} 帧 · 手指映射 ${s.retarget_ms?.toFixed(1)??'—'} ms · 驱动往返 ${s.hardware?.last?.bridge_ms?.toFixed(1)??'—'} ms · 已发送 ${s.hardware?.sent??0}`;
+    document.getElementById('arm').hidden=!s.arm;
+    if(s.arm){
+      const a=s.arm;
+      document.getElementById('armhome').disabled=homePending||!a.home||a.home.active;
+      document.getElementById('armalign').disabled=!!a.home?.active;
+      document.getElementById('armhome').title=a.home?'回零约 4.5 秒；请确保路径畅通。完成后保持，需重新对齐才能跟随':'当前机械臂进程尚未加载回零功能';
+      document.getElementById('armhint').textContent=(a.ik_backend==='unitree'||a.behavior_revision?.startsWith('soft-target-hold-v'))?'目标暂不可达时保持，回到可达范围后自动继续；跟踪丢失、手动暂停或回零后需重新对齐。回零中可随时暂停。当前以 X5 法兰为控制参考点。':'当前是旧版机械臂进程；新功能需在支撑机械臂后正常重启加载。';
+      document.getElementById('armstatus').textContent=(a.mode==='preview'?'【模拟输出】 ':'')+a.status;
+      document.getElementById('armstats').textContent=`IK ${a.ik_backend==='unitree'?'连续优化':'SDK'} · 平移 ×${a.position_scale??'—'} · 旋转 1:1 · 接收→指令 ${a.pose_to_command_ms?.toFixed(1)??'—'} ms · 逆解 ${a.ik_ms?.toFixed(2)??'—'} ms · 已发送 ${a.sent??0} · Head Pose ${s.head_age_ms<200&&s.head_age_ms!==null?'已连接':'等待开启'}`;
+    }
+    document.getElementById('debug').textContent=JSON.stringify(s,null,2);
+  }catch{document.getElementById('status').textContent='等待服务连接';}
+  setTimeout(poll,300);
+}poll();
+</script></html>

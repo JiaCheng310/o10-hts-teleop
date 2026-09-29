@@ -1,0 +1,31 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTS 画面录制</title><style>
+*{box-sizing:border-box}body{background:#101921;color:#eef5f9;font:16px system-ui;margin:0;padding:8px 0 16px}h2{margin:0 0 10px;font-size:24px}p{line-height:1.6;margin:8px 0}small,.muted{color:#b8cbd8}button{padding:12px 18px;border:0;border-radius:8px;font:inherit;margin:5px 8px 5px 0;background:#82e5b3;cursor:pointer}button:disabled{opacity:.4;cursor:not-allowed}button.stop{background:#ffbd88}.badge{display:inline-block;border-radius:30px;padding:4px 12px;background:#263b48;font-size:14px}.live{background:#683344;color:#ffbacb}#error{color:#ffbd88}#files{padding:0;list-style:none;margin:12px 0}.file{border-top:1px solid #354b59;padding:12px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}.file p{margin:0;font-size:14px}.links{white-space:nowrap}a{color:#82e5b3;font-size:14px;margin-left:14px}video{width:100%;max-height:380px;border-radius:10px;background:#000;margin-top:8px}[hidden]{display:none!important}#location{overflow-wrap:anywhere;font-size:12px}
+</style></head><body>
+<h2>HTS 画面录制 <span class="badge" id="badge">连接中</span></h2>
+<p class="muted">录制 Quest 系统单眼画面，适合直接展示。停止后保存到 ARX，可预览或下载。</p>
+<button id="start" disabled>● 开始录制</button><button id="stop" class="stop" disabled>■ 停止并保存</button><button id="retry" hidden>重试保存</button>
+<p id="status" role="status">正在连接录屏服务…</p><small>系统单眼画面 · 右眼 · 1080 × 1080 · 无音频</small><p id="error" role="alert"></p>
+<video id="preview" controls preload="none" hidden></video>
+<ul id="files"></ul><p id="empty" class="muted">暂无录像</p><p id="location" class="muted"></p>
+<script>
+let pending=false, latest=null, requestError='', signature='';
+const $=id=>document.getElementById(id);
+const labels={idle:'待录制',starting:'启动中',recording:'录制中',stopping:'结束录制中',saving:'保存中',recoverable:'待恢复',error:'录制失败'};
+function duration(s){s=Math.floor(s||0);return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}
+function render(s){
+  latest=s;$('badge').textContent=labels[s.phase]||s.phase;$('badge').classList.toggle('live',s.phase==='recording');
+  $('start').disabled=pending||!s.connected||!['idle','error'].includes(s.phase)||!!s.job;
+  $('stop').disabled=pending||s.phase!=='recording';$('retry').hidden=s.phase!=='recoverable';$('retry').disabled=pending||!s.connected;
+  const descriptions={idle:s.connected?(s.awake===false?'Quest 已连接但处于休眠，请戴上头显后开始录制。':'Quest USB 已连接，可以开始录制。'):'请连接 Quest USB 并允许调试。',starting:'正在启动 Quest 录屏…',recording:`正在录制 · ${duration(s.elapsed_s)}`,stopping:'正在结束录制，等待视频完成…',saving:'正在保存到 ARX，完成后将出现在下方。',recoverable:'上次视频尚未保存；连接 Quest 后点击重试保存。',error:'上次未录到画面，戴上头显后可重新开始。'};
+  $('status').textContent=descriptions[s.phase]||s.phase;$('error').textContent=requestError||s.error||(!s.connected?s.device_error:'')||'';$('location').textContent='保存位置：'+s.output;
+  const key=JSON.stringify(s.files);if(key!==signature){signature=key;$('files').replaceChildren();$('empty').hidden=!!s.files.length;
+    for(const f of s.files){const li=document.createElement('li');li.className='file';const info=document.createElement('div');const title=document.createElement('p');title.textContent=new Date((f.created_at||0)*1000).toLocaleString('zh-CN');const meta=document.createElement('small');meta.textContent=`${duration(f.duration_s)} · ${(f.bytes/1048576).toFixed(1)} MB · ${f.view==='undistorted-mono'?'系统单眼':'原始双眼'}`;info.append(title,meta);const links=document.createElement('div');links.className='links';const path='/videos/'+encodeURIComponent(f.name);const play=document.createElement('a');play.href=path;play.textContent='预览';play.onclick=e=>{e.preventDefault();$('preview').hidden=false;$('preview').src=path;$('preview').play().catch(()=>{});};const download=document.createElement('a');download.href=path+'?download=1';download.download=f.name;download.textContent='下载 MP4';links.append(play,download);li.append(info,links);$('files').append(li);}
+  }
+}
+async function act(action){pending=true;requestError='';if(latest)render(latest);try{const r=await fetch('/control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({source:'quest-recording',action}),signal:AbortSignal.timeout(20000)});const s=await r.json();if(!r.ok)throw Error(s.error||'操作失败');render(s);}catch(e){requestError=e.message;$('error').textContent=requestError;}finally{pending=false;if(latest)render(latest);}}
+$('start').onclick=()=>act('start');$('stop').onclick=()=>act('stop');$('retry').onclick=()=>act('retry');
+async function poll(){try{const r=await fetch('/state',{cache:'no-store',signal:AbortSignal.timeout(5000)});if(!r.ok)throw Error();render(await r.json());}catch(e){$('badge').textContent='未连接';$('status').textContent='录屏服务未连接，请检查 ARX 连接。';$('start').disabled=$('stop').disabled=true;}setTimeout(poll,1000);}poll();
+const parentOrigin=document.referrer?new URL(document.referrer).origin:location.origin;
+new ResizeObserver(()=>parent.postMessage({source:'quest-recording-height',height:document.documentElement.scrollHeight},parentOrigin)).observe(document.body);
+</script></body></html>

@@ -1,0 +1,5 @@
+<!doctype html><html lang="zh"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Quest 左手 · OmniHand</title>
+<style>body{margin:24px;background:#101921;color:#f0f5f8;font:18px system-ui}button{padding:15px 22px;margin:5px;border:0;border-radius:9px;font:inherit;background:#7be3b2}#pause{background:#ffc18e}#resume{background:#a9d5ff}#status{min-height:48px}small{color:#aec0ce}pre{font-size:13px;white-space:pre-wrap}canvas{display:none}.xr-active h1,.xr-active #intro,.xr-active details{display:none}.xr-active #hud{background:#101921cc;display:inline-block;padding:12px;border-radius:12px}</style>
+<h1>Quest 裸手 → OmniHand</h1><p id="intro">DexPilot · 所选 O10 · 直接目标发送<br><small>进入后自动跟随；手离开暂停发送，回来自动恢复。</small></p>
+<div id="hud"><button id="start">进入跟踪并跟随</button><button id="pause">暂停动作</button><button id="resume">恢复跟随</button><p id="status">正在检查连接…</p><p id="tracking"></p><small id="stats"></small></div>
+<details><summary>诊断信息</summary><pre id="debug"></pre></details><canvas id="canvas"></canvas><script src="/hand-v3.js?v=native-sources-1"></script></html>
