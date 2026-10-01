@@ -10,9 +10,7 @@
 
 ## 演示
 
-[![OmniHand O10 裸手遥操演示](assets/o10-hts-demo.gif)](https://raw.githubusercontent.com/JiaCheng310/o10-hts-teleop/main/assets/o10-hts-demo.mp4)
-
-[观看带声音的完整视频（720p，30 FPS）](https://raw.githubusercontent.com/JiaCheng310/o10-hts-teleop/main/assets/o10-hts-demo.mp4)。
+![OmniHand O10 裸手遥操演示](assets/o10-hts-demo.gif)
 
 ## 工作流程
 

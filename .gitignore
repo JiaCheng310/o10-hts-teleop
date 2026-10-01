@@ -13,7 +13,6 @@ __pycache__/
 /teleop/output/
 *.log
 *.mp4
-!/assets/o10-hts-demo.mp4
 *.pem
 *.key
 ._*

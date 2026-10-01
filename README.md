@@ -10,9 +10,7 @@ This project adapts dex-retargeting's DexPilot implementation to the O10's ten a
 
 ## Demo
 
-[![OmniHand O10 bare-hand teleoperation demo](assets/o10-hts-demo.gif)](https://raw.githubusercontent.com/JiaCheng310/o10-hts-teleop/main/assets/o10-hts-demo.mp4)
-
-[Watch the full video with audio (720p, 30 FPS)](https://raw.githubusercontent.com/JiaCheng310/o10-hts-teleop/main/assets/o10-hts-demo.mp4).
+![OmniHand O10 bare-hand teleoperation demo](assets/o10-hts-demo.gif)
 
 ## Overview
 
