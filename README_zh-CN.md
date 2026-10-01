@@ -4,9 +4,17 @@
 
 [English](README.md) | **简体中文**
 
-[安装](#安装) · [设备配置](#设备配置) · [开始遥操](#开始遥操) · [录屏](#录屏) · [常见问题](#常见问题)
+[演示](#演示) · [安装](#安装) · [设备配置](#设备配置) · [开始遥操](#开始遥操) · [录屏](#录屏) · [常见问题](#常见问题)
 
 本项目在 dex-retargeting 的 DexPilot 实现上，适配 O10 的 10 个主动关节、关节顺序、限位与非线性手指耦合。支持 O10 左右手、伸直与握拳辅助、最新帧处理、跟踪丢失恢复，以及本机状态和录屏网页。
+
+## 演示
+
+[![OmniHand O10 裸手遥操演示](assets/o10-hts-demo.gif)](https://raw.githubusercontent.com/JiaCheng310/o10-hts-teleop/main/assets/o10-hts-demo.mp4)
+
+[观看带声音的完整视频（720p，30 FPS）](https://raw.githubusercontent.com/JiaCheng310/o10-hts-teleop/main/assets/o10-hts-demo.mp4)。
+
+## 工作流程
 
 ```text
 Quest 3 原生裸手跟踪 → HTS → USB / ADB reverse

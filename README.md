@@ -4,9 +4,17 @@
 
 **English** | [简体中文](README_zh-CN.md)
 
-[Installation](#installation) · [Device setup](#device-setup) · [Teleoperation](#teleoperation) · [Recording](#recording) · [Troubleshooting](#troubleshooting)
+[Demo](#demo) · [Installation](#installation) · [Device setup](#device-setup) · [Teleoperation](#teleoperation) · [Recording](#recording) · [Troubleshooting](#troubleshooting)
 
 This project adapts dex-retargeting's DexPilot implementation to the O10's ten active joints, joint order, limits, and nonlinear finger coupling. It supports a left or right O10, finger-extension and closed-fist assistance, latest-frame processing, tracking-loss recovery, and a local status/recording page.
+
+## Demo
+
+[![OmniHand O10 bare-hand teleoperation demo](assets/o10-hts-demo.gif)](https://raw.githubusercontent.com/JiaCheng310/o10-hts-teleop/main/assets/o10-hts-demo.mp4)
+
+[Watch the full video with audio (720p, 30 FPS)](https://raw.githubusercontent.com/JiaCheng310/o10-hts-teleop/main/assets/o10-hts-demo.mp4).
+
+## Overview
 
 ```text
 Quest 3 native hand tracking → HTS → USB / ADB reverse
